@@ -7,7 +7,7 @@ orbs:
 executors:
   default:
     docker:
-      - image: circleci/node:latest
+      - image: circleci/python:3.7.2-node
 
 
 jobs:
@@ -18,8 +18,7 @@ jobs:
       - checkout
       - restore_cache:
           name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
@@ -29,14 +28,14 @@ jobs:
           paths:
             - ~/.cache/yarn
       - run:
-          name: Lint
+          name: Run Linter
           command: yarn lint
       - run:
-          name: Build
+          name: Build Dist
           command: yarn build
       - save_cache:
-          name: Save
-          key: dist-{{ .Environment.CIRCLE_SHA1 }}
+          name: Save Dist Cache
+          key: v1-dist-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/dist
 
@@ -46,8 +45,8 @@ jobs:
     steps:
       - aws-cli/install
       - restore_cache:
-          name: Restore
-          key: dist-{{ .Environment.CIRCLE_SHA1 }}
+          name: Restore Dist Cache
+          key: v1-dist-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: ls ~/repo
       - run:
