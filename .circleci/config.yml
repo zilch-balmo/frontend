@@ -48,9 +48,51 @@ jobs:
           name: Restore Dist Cache
           key: v1-dist-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          command: ls ~/repo
-      - run:
-          command: ls ~/repo/dist
+          name: Sync Dist
+          command: |
+            aws --profile zilch s3 sync \
+                --cache-control "no-cache" \
+                --content-type "text/html" \
+                --exclude "*" \
+                --include "index.html" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist s3://app.zilch.me/
+
+            aws --profile zilch s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "text/css" \
+                --delete \
+                --exclude "*" \
+                --include "*.css" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist/css s3://app.zilch.me/css/
+
+            aws --profile zilch s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "image/png" \
+                --delete \
+                --exclude "*" \
+                --include "*.png" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist/img s3://app.zilch.me/img/
+
+            aws --profile zilch s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "text/javascript" \
+                --delete \
+                --exclude "*" \
+                --include "*.js" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist/js s3://app.zilch.me/js/
+
+            aws --profile zilch s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "application/json" \
+                --delete \
+                --exclude "*" \
+                --include "*.js.map" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist/js s3://app.zilch.me/js/
 
 
 workflows:
