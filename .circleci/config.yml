@@ -50,6 +50,7 @@ jobs:
       - run:
           name: Sync Dist
           command: |
+            # index.html (do not cache)
             aws s3 sync \
                 --cache-control "no-cache" \
                 --content-type "text/html" \
@@ -58,6 +59,48 @@ jobs:
                 --storage-class REDUCED_REDUNDANCY \
                 dist s3://app.zilch.me/
 
+            # favicon stuff
+            aws s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "image/x-icon" \
+                --exclude "*" \
+                --include *.ico" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist s3://app.zilch.me/
+
+            aws s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "text/xml" \
+                --exclude "*" \
+                --include "browserconfig.xml" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist s3://app.zilch.me/
+
+            aws s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "image/png" \
+                --exclude "*" \
+                --include *.png" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist s3://app.zilch.me/
+
+            aws s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "image/svg+xml" \
+                --exclude "*" \
+                --include "safari-pinned-tab.svg" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist s3://app.zilch.me/
+
+            aws s3 sync \
+                --cache-control "max-age=3600" \
+                --content-type "application/json" \
+                --exclude "*" \
+                --include "site.webmanifest" \
+                --storage-class REDUCED_REDUNDANCY \
+                dist s3://app.zilch.me/
+
+            # css
             aws s3 sync \
                 --cache-control "max-age=3600" \
                 --content-type "text/css" \
@@ -67,6 +110,7 @@ jobs:
                 --storage-class REDUCED_REDUNDANCY \
                 dist/css s3://app.zilch.me/css/
 
+            # img
             aws s3 sync \
                 --cache-control "max-age=3600" \
                 --content-type "image/png" \
@@ -76,6 +120,7 @@ jobs:
                 --storage-class REDUCED_REDUNDANCY \
                 dist/img s3://app.zilch.me/img/
 
+            # js
             aws s3 sync \
                 --cache-control "max-age=3600" \
                 --content-type "text/javascript" \
